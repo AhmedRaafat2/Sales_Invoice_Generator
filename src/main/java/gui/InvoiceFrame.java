@@ -7,6 +7,8 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -16,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class InvoiceFrame extends javax.swing.JFrame implements ActionListener {
+public class InvoiceFrame extends javax.swing.JFrame implements ActionListener, MouseListener {
 
     private DateFormat df = new SimpleDateFormat("dd-MM-yyy");
     private List<InvoiceHeader> invoicesArray = new ArrayList<>();
@@ -50,37 +52,37 @@ public class InvoiceFrame extends javax.swing.JFrame implements ActionListener {
     }
 
     private void initComponents() {
-        jLabel1 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        invoicesTable = new javax.swing.JTable();
-        createNewInvoiceBtn = new javax.swing.JButton();
+        jLabel1 = new JLabel();
+        jScrollPane1 = new JScrollPane();
+        invoicesTable = new JTable();
+        createNewInvoiceBtn = new JButton();
         createNewInvoiceBtn.addActionListener(this);
-        deleteInvoiceBtn = new javax.swing.JButton();
+        deleteInvoiceBtn = new JButton();
         deleteInvoiceBtn.addActionListener(this);
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        customerNameTextField = new javax.swing.JTextField();
-        invoiceDateTextField = new javax.swing.JTextField();
-        invoiceNumberShowLbl = new javax.swing.JLabel();
-        invoiceTotalShowLbl = new javax.swing.JLabel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        saveInvoiceBtn = new javax.swing.JButton();
+        jLabel2 = new JLabel();
+        jLabel3 = new JLabel();
+        jLabel4 = new JLabel();
+        jLabel5 = new JLabel();
+        customerNameTextField = new JTextField();
+        invoiceDateTextField = new JTextField();
+        invoiceNumberShowLbl = new JLabel();
+        invoiceTotalShowLbl = new JLabel();
+        jScrollPane2 = new JScrollPane();
+        jTable1 = new JTable();
+        saveInvoiceBtn = new JButton();
         saveInvoiceBtn.addActionListener(this);
-        cancelInvoiceBtn = new javax.swing.JButton();
+        cancelInvoiceBtn = new JButton();
         cancelInvoiceBtn.addActionListener(this);
-        jLabel8 = new javax.swing.JLabel();
-        jMenuBar1 = new javax.swing.JMenuBar();
-        fileMenu = new javax.swing.JMenu();
-        loadFileMenu = new javax.swing.JMenuItem();
+        jLabel8 = new JLabel();
+        jMenuBar1 = new JMenuBar();
+        fileMenu = new JMenu();
+        loadFileMenu = new JMenuItem();
         loadFileMenu.addActionListener(this);
-        saveFileMenu = new javax.swing.JMenuItem();
+        saveFileMenu = new JMenuItem();
         saveFileMenu.addActionListener(this);
 
         setLocation(500,300);
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setText("Invoices Table");
 
@@ -309,6 +311,7 @@ public class InvoiceFrame extends javax.swing.JFrame implements ActionListener {
                     headerModel = new InvoiceHeaderTableModel(invoicesArray);
                     invoicesTable.setModel(headerModel);
                     invoicesTable.validate();
+                    invoicesTable.addMouseListener(this);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -325,5 +328,33 @@ public class InvoiceFrame extends javax.swing.JFrame implements ActionListener {
             }
         }
         return header;
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        int x = invoicesTable.getSelectedRow();
+        System.out.println("selected row is    : "+x);
+
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
     }
 }
