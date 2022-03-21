@@ -109,10 +109,10 @@ public class InvoiceFrame extends javax.swing.JFrame implements ActionListener, 
         jLabel4.setText("Custumer Name");
         jLabel5.setText("Invoice Total");
 
-        customerNameTextField.setText("jTextField1");
-        invoiceDateTextField.setText("jTextField2");
-        invoiceNumberShowLbl.setText("1.0");
-        invoiceTotalShowLbl.setText("jLabel7");
+//        customerNameTextField.setText("");
+//        invoiceDateTextField.setText("");
+//        invoiceNumberShowLbl.setText("1.0");
+//        invoiceTotalShowLbl.setText("jLabel7");
 
 //        jTable1.setModel(new javax.swing.table.DefaultTableModel(
 //                new Object [][] {
@@ -334,6 +334,20 @@ public class InvoiceFrame extends javax.swing.JFrame implements ActionListener, 
     public void mouseClicked(MouseEvent e) {
         int x = invoicesTable.getSelectedRow();
         System.out.println("selected row is    : "+x);
+        InvoiceHeader header = invoicesArray.get(invoicesTable.getSelectedRow());
+        System.out.println(header.getInvNumber());
+        System.out.println(header.getCustomerName());
+        System.out.println(header.getInvDate());
+        System.out.println(header.getInvoiceTotal());
+        System.out.println(header.getLines());
+
+        customerNameTextField.setText(header.getCustomerName());
+        invoiceDateTextField.setText(df.format(header.getInvDate()));
+        invoiceNumberShowLbl.setText(""+header.getInvNumber());
+        invoiceTotalShowLbl.setText(""+header.getInvoiceTotal());
+
+        System.out.println(header.getLines().get(0).getLineTotal());
+
 
 
     }
