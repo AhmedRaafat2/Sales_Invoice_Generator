@@ -3,6 +3,8 @@ package gui;
 import model.InvoiceHeader;
 import model.InvoiceHeaderTableModel;
 import model.InvoiceLine;
+import model.InvoiceLinesTableModel;
+
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.ActionEvent;
@@ -22,7 +24,9 @@ public class InvoiceFrame extends javax.swing.JFrame implements ActionListener, 
 
     private DateFormat df = new SimpleDateFormat("dd-MM-yyy");
     private List<InvoiceHeader> invoicesArray = new ArrayList<>();
+    private List<InvoiceLine> invoiceLinessArray = new ArrayList<>();
     private InvoiceHeaderTableModel headerModel;
+    private InvoiceLinesTableModel linesModel;
     private JButton cancelInvoiceBtn;
     private JButton createNewInvoiceBtn;
     private JTextField customerNameTextField;
@@ -41,7 +45,7 @@ public class InvoiceFrame extends javax.swing.JFrame implements ActionListener, 
     private JMenuBar jMenuBar1;
     private JScrollPane jScrollPane1;
     private JScrollPane jScrollPane2;
-    private JTable jTable1;
+    private JTable linesTable;
     private JMenuItem loadFileMenu;
     private JMenuItem saveFileMenu;
     private JButton saveInvoiceBtn;
@@ -68,7 +72,7 @@ public class InvoiceFrame extends javax.swing.JFrame implements ActionListener, 
         invoiceNumberShowLbl = new JLabel();
         invoiceTotalShowLbl = new JLabel();
         jScrollPane2 = new JScrollPane();
-        jTable1 = new JTable();
+        linesTable = new JTable();
         saveInvoiceBtn = new JButton();
         saveInvoiceBtn.addActionListener(this);
         cancelInvoiceBtn = new JButton();
@@ -122,7 +126,7 @@ public class InvoiceFrame extends javax.swing.JFrame implements ActionListener, 
 //
 //                }
 //        ));
-        jScrollPane2.setViewportView(jTable1);
+        jScrollPane2.setViewportView(linesTable);
 
         saveInvoiceBtn.setText("Save");
         saveInvoiceBtn.setActionCommand("save");
@@ -332,24 +336,22 @@ public class InvoiceFrame extends javax.swing.JFrame implements ActionListener, 
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        int x = invoicesTable.getSelectedRow();
-        System.out.println("selected row is    : "+x);
         InvoiceHeader header = invoicesArray.get(invoicesTable.getSelectedRow());
-        System.out.println(header.getInvNumber());
-        System.out.println(header.getCustomerName());
-        System.out.println(header.getInvDate());
-        System.out.println(header.getInvoiceTotal());
-        System.out.println(header.getLines());
 
         customerNameTextField.setText(header.getCustomerName());
         invoiceDateTextField.setText(df.format(header.getInvDate()));
         invoiceNumberShowLbl.setText(""+header.getInvNumber());
         invoiceTotalShowLbl.setText(""+header.getInvoiceTotal());
 
-        System.out.println(header.getLines().get(0).getLineTotal());
-
-
-
+        int linesCount = invoicesArray.get(invoicesTable.getSelectedRow()).getLines().size();
+        invoiceLinessArray.clear();
+        for (int i =0 ; i < linesCount; i++){
+            InvoiceLine line = invoicesArray.get(invoicesTable.getSelectedRow()).getLines().get(i);
+            invoiceLinessArray.add(line);
+        }
+        linesModel = new InvoiceLinesTableModel(invoiceLinessArray,invoicesArray);
+        linesTable.setModel(linesModel);
+        linesTable.validate();
     }
 
     @Override
