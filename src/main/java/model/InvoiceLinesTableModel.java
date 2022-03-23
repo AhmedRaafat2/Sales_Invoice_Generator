@@ -85,5 +85,4 @@ public class InvoiceLinesTableModel extends AbstractTableModel {
                 return "";
         }
     }
-    
 }

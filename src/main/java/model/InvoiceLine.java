@@ -12,8 +12,6 @@ public class InvoiceLine {
         this.itemCount = itemCount;
         this.header = header;
     }
-    
-    
 
     public String getItemName() {
         return itemName;

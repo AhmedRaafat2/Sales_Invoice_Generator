@@ -14,6 +14,10 @@ public class InvoiceHeaderTableModel extends AbstractTableModel {
         this.invoicesArray = invoicesArray;
     }
 
+    public List<InvoiceHeader> getInvoicesArray() {
+        return invoicesArray;
+    }
+
     @Override
     public int getRowCount() {
         return invoicesArray.size();

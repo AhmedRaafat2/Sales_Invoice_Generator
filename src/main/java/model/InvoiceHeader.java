@@ -9,7 +9,6 @@ public class InvoiceHeader {
     private Date invDate;
     private ArrayList<InvoiceLine> lines;
 
-
     public InvoiceHeader(int invNumber, Date invDate, String customerName) {
         this.invNumber = invNumber;
         this.customerName = customerName;
@@ -63,6 +62,4 @@ public class InvoiceHeader {
     public void addInvoiceLine(InvoiceLine line) {
         getLines().add(line);
     }
-
-
 }
