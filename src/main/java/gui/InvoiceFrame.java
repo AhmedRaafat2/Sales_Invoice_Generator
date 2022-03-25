@@ -51,7 +51,6 @@ public class InvoiceFrame extends javax.swing.JFrame implements ActionListener, 
     private InvoiceAddNewHeaderDialog addNewHeaderDialog;
     private InvoiceAddLineDialog addNewLineDialog;
 
-
     public InvoiceFrame() {
         initComponents();
     }
@@ -120,6 +119,7 @@ public class InvoiceFrame extends javax.swing.JFrame implements ActionListener, 
         loadFileMenu.setActionCommand("LoadFile");
         fileMenu.add(loadFileMenu);
         saveFileMenu.setText("Save File");
+        saveFileMenu.setEnabled(false);
         saveFileMenu.setActionCommand("SaveFile");
         fileMenu.add(saveFileMenu);
         jMenuBar1.add(fileMenu);
@@ -215,16 +215,19 @@ public class InvoiceFrame extends javax.swing.JFrame implements ActionListener, 
                 loadFile();
                 break;
             case "SaveFile":
+                saveFiles();
                 break;
             case "CreateNewInvoice":
                 showAddInvoiceHeaderDialog();
                 break;
             case "DeleteInvoice":
+                deleteInvoice();
                 break;
             case "createNewLine":
                 showAddInvoiceLineDialog();
                 break;
             case "deleteInvoiceLine":
+                deleteLine();
                 break;
             case "createNewHeaderOkBtn":
                 createInvoiceDialogOk();
@@ -241,6 +244,87 @@ public class InvoiceFrame extends javax.swing.JFrame implements ActionListener, 
         }
     }
 
+    private void saveFiles() {
+        String headerString = "";
+        String linesString = "";
+        for (int i = 0; i < invoicesArray.size(); i++) {
+            headerString += "" + invoicesArray.get(i).getInvNumber();
+            headerString += ",";
+            headerString += "" + df.format(invoicesArray.get(i).getInvDate());
+            headerString += ",";
+            headerString += invoicesArray.get(i).getCustomerName();
+            headerString += "\n";
+        }
+
+        for (int i = 0; i < invoicesArray.size(); i++) {
+            for (int y = 0; y < invoicesArray.get(i).getLines().size(); y++) {
+                linesString += "" + invoicesArray.get(i).getInvNumber();
+                linesString += ",";
+                linesString += invoicesArray.get(i).getLines().get(y).getItemName();
+                linesString += ",";
+                linesString += "" + invoicesArray.get(i).getLines().get(y).getItemPrice();
+                linesString += ",";
+                linesString += "" + invoicesArray.get(i).getLines().get(y).getItemCount();
+                linesString += "\n";
+            }
+        }
+        JOptionPane.showMessageDialog(this, "Select File to Save Header", "Important Note", JOptionPane.WARNING_MESSAGE);
+        JFileChooser fileChooser = new JFileChooser();
+        int result = fileChooser.showSaveDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File headerFile = fileChooser.getSelectedFile();
+            try {
+                FileWriter headerWriter = new FileWriter(headerFile);
+                headerWriter.write(headerString);
+                headerWriter.flush();
+                headerWriter.close();
+
+                JOptionPane.showMessageDialog(this, "Select File to Save Lines", "Important Note", JOptionPane.WARNING_MESSAGE);
+                result = fileChooser.showSaveDialog(this);
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    File linesFile = fileChooser.getSelectedFile();
+                    FileWriter linesWriter = new FileWriter(linesFile);
+                    linesWriter.write(linesString);
+                    linesWriter.flush();
+                    linesWriter.close();
+                    JOptionPane.showMessageDialog(this, "Your data written succesfully", "Important Note", JOptionPane.INFORMATION_MESSAGE);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println(headerString);
+        System.out.println("*******************");
+        System.out.println(linesString);
+    }
+
+    private void deleteInvoice() {
+        if (invoicesTable.getSelectedRow() >= 0) {
+            int selectedHeaderRow = invoicesTable.getSelectedRow();
+
+            invoicesArray.remove(selectedHeaderRow);
+            linesTable.setModel(new InvoiceLinesTableModel(new ArrayList<InvoiceLine>(), invoicesArray));
+            headerModel.fireTableDataChanged();
+            linesModel.fireTableDataChanged();
+
+            customerNameTextField.setText("");
+            invoiceDateTextField.setText("");
+            invoiceNumberShowLbl.setText("");
+            invoiceTotalShowLbl.setText("");
+        }
+    }
+
+    private void deleteLine() {
+        if (linesTable.getSelectedRow() >= 0) {
+            int selectedLineRow = linesTable.getSelectedRow();
+            int selectedHeaderRow = invoicesTable.getSelectedRow();
+            invoicesArray.get(selectedHeaderRow).getLines().remove(selectedLineRow);
+            invoiceTotalShowLbl.setText("" + headerModel.getInvoicesArray().get(invoicesTable.getSelectedRow()).getInvoiceTotal());
+            headerModel.fireTableDataChanged();
+            linesModel.fireTableDataChanged();
+        }
+    }
+
     private void okInvoiceLineDialog() {
         String itemName = addNewLineDialog.getItemNameTF().getText();
         String itemCountString = addNewLineDialog.getItemCountTF().getText();
@@ -253,12 +337,13 @@ public class InvoiceFrame extends javax.swing.JFrame implements ActionListener, 
         int itemCount = Integer.parseInt(itemCountString);
         double itemPrice = Double.parseDouble(itemPriceString);
         int headerIndex = invoicesTable.getSelectedRow();
-        InvoiceLine invoiceLine = new InvoiceLine(itemName,itemPrice,itemCount,invoicesArray.get(headerIndex));
+        InvoiceLine invoiceLine = new InvoiceLine(itemName, itemPrice, itemCount, invoicesArray.get(headerIndex));
         invoicesArray.get(headerIndex).getLines().add(invoiceLine);
-        invoiceTotalShowLbl.setText(""+ headerModel.getInvoicesArray().get(invoicesTable.getSelectedRow()).getInvoiceTotal());
+        invoiceTotalShowLbl.setText("" + headerModel.getInvoicesArray().get(invoicesTable.getSelectedRow()).getInvoiceTotal());
         headerModel.fireTableDataChanged();
         linesModel.fireTableDataChanged();
     }
+
     private void cancelInvoiceLineDialog() {
         addNewLineDialog.setVisible(false);
         addNewLineDialog.dispose();
@@ -276,25 +361,25 @@ public class InvoiceFrame extends javax.swing.JFrame implements ActionListener, 
         addNewHeaderDialog.setVisible(false);
         addNewHeaderDialog.dispose();
         addNewHeaderDialog = null;
-        try{
+        try {
             Date invoiceDate = df.parse(invoiceDateString);
             int invoiceNumber = getNextInvoiceNumber();
             InvoiceHeader header = new InvoiceHeader(invoiceNumber, invoiceDate, customerName);
             invoicesArray.add(header);
             headerModel.fireTableDataChanged();
-        }catch (ParseException e){
+        } catch (ParseException e) {
             e.printStackTrace();
         }
     }
 
-    private int getNextInvoiceNumber(){
+    private int getNextInvoiceNumber() {
         int max = 0;
-        for (InvoiceHeader header : invoicesArray){
-            if (header.getInvNumber() > max){
+        for (InvoiceHeader header : invoicesArray) {
+            if (header.getInvNumber() > max) {
                 max = header.getInvNumber();
             }
         }
-        return max+1;
+        return max + 1;
     }
 
     private void createInvoiceDialogcancel() {
@@ -367,12 +452,17 @@ public class InvoiceFrame extends javax.swing.JFrame implements ActionListener, 
                     invoicesTable.setModel(headerModel);
                     invoicesTable.validate();
                 }
-            } catch (Exception e) {
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ParseException e) {
                 e.printStackTrace();
             }
         }
         createNewInvoiceBtn.setEnabled(true);
         deleteInvoiceBtn.setEnabled(true);
+        saveFileMenu.setEnabled(true);
     }
 
     public InvoiceHeader returnInvoiceById(int invoiceNumber) {
@@ -388,9 +478,8 @@ public class InvoiceFrame extends javax.swing.JFrame implements ActionListener, 
 
     @Override
     public void valueChanged(ListSelectionEvent e) {
-
         int selectedRowIndex = invoicesTable.getSelectedRow();
-        if (selectedRowIndex >= 0){
+        if (selectedRowIndex >= 0) {
             InvoiceHeader header = headerModel.getInvoicesArray().get(selectedRowIndex);
             customerNameTextField.setText(header.getCustomerName());
             invoiceDateTextField.setText(df.format(header.getInvDate()));

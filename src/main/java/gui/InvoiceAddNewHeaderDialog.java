@@ -19,7 +19,6 @@ public class InvoiceAddNewHeaderDialog extends JDialog {
         invoiceDateTF = new JTextField();
         okButton = new JButton("ok");
         cancelButton = new JButton("cancel");
-
         okButton.setActionCommand("createNewHeaderOkBtn");
         okButton.addActionListener(invoiceFrame);
         cancelButton.setActionCommand("cancelNewHeaderBtn");

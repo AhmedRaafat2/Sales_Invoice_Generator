@@ -23,7 +23,6 @@ public class InvoiceAddLineDialog extends JDialog {
         itemCountTF = new JTextField();
         okButton = new JButton("ok");
         cancelButton = new JButton("cancel");
-
         okButton.addActionListener(frame);
         okButton.setActionCommand("okAddLineDialog");
         cancelButton.addActionListener(frame);
